@@ -1,0 +1,52 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "mystoragename": {
+      "type": "string",
+      "defaultValue": "OFDemoStorage01"
+    },
+    "storageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_GRS",
+        "Standard_LRS"
+      ]
+    },
+    "webSiteName": {
+      "type": "string",
+      "defaultValue": "OFDemoStorage01-2015"
+    }
+  },
+  "variables": {
+    "StorageapiVersion": "2015-06-15",
+    "WebapiVersion": "2015-08-01"
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('StorageapiVersion')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourcegroup().location]",
+      "name": "[parameters('mystoragename')]",
+      "tags": {
+        "Department": "Sales"
+      },
+      "properties": {
+        "accountType": "[parameters('storagetype')]"
+      }
+    },
+    {
+      "apiVersion": "[variables('WebapiVersion')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('webSiteName')]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('mystoragename'))]"
+      ],
+      "properties": {
+        "name": "[parameters('webSiteName')]"
+      }
+    }
+  ]
+}
